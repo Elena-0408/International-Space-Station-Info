@@ -1,0 +1,64 @@
+﻿@using ISS_Info.Controllers
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<link type="text/css" href="~/css/site.css" rel="stylesheet" />
+
+<script>
+    setTimeout(function(){
+	location.reload();
+}, 5000);
+</script>
+
+<div class="ISS_position">
+
+    @{HomeController home = new HomeController(); }
+    <p class="coordinates_info">
+        ISS is now located at:
+        longitude: @home.GetCoordinates().iss_position.longitude ,
+        latitude: @home.GetCoordinates().iss_position.latitude
+    </p>
+</div>
+
+<div class="cosmonauts">
+
+    @foreach (var person in home.GetPeopleInSpace())
+    {
+        <img class="cosmonaut" src="~/images/spaceman.png" />
+        <p>@person.name</p>
+
+    }
+    <p>Total amount: @home.GetPeopleInSpace().Count() people on ISS.</p>
+</div>
+
+<div class="current_time">
+    <p class="time_info">
+        Current UTC time:
+        @home.ConvertToUTC();
+    </p>
+</div>
+
+
+<div class="map" id="map"></div>
+<script>
+    function initMap() {
+        const myLatLng = { lat: @home.GetCoordinates().iss_position.latitude, lng: @home.GetCoordinates().iss_position.longitude };
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 4,
+            center: myLatLng,
+        });
+
+        new google.maps.Marker({
+            position: myLatLng,
+            map,
+            title: "ISS",
+        })
+    }
+
+    window.initMap = initMap;
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAkv8yq6imNm00eyw06FYfqlaSG0vDWW28&callback=initMap&v=weekly"
+        defer></script>
+
+
